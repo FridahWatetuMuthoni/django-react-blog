@@ -28,9 +28,10 @@ INSTALLED_APPS = [
     
     #installed apps
     'rest_framework',
-    'rest_framework.authtoken',
+    'rest_framework.authtoken',#for authentication
     
     #custom apps
+    'localusers.apps.LocalusersConfig',
     'api.apps.ApiConfig',
 ]
 
@@ -116,3 +117,20 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#Custom Settings
+
+AUTH_USER_MODEL = 'localusers.CustomUser'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES':(
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173'
+]
+
+MEDIA_URL = '/images/'
+MEDIA_ROOT = BASE_DIR / 'images'

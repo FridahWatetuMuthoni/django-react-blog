@@ -1,8 +1,8 @@
 import UseGlobalContext from "./hooks/UseGlobalContext";
 
 function Home() {
-  const { name } = UseGlobalContext();
-  console.log(name);
+  const values = UseGlobalContext();
+  console.log(values);
   return (
     <div className="container">
       <h1>Home Page</h1>

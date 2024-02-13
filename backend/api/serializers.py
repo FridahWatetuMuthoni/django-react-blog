@@ -1,35 +1,37 @@
-from .models import Article
+from .models import Article,Categories
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
-from rest_framework.authtoken.views import Token
-
-User = get_user_model()
-
 
 
 class ArticleSerializer(serializers.ModelSerializer):
+    author = serializers.ReadOnlyField(source='author.username')
+    category = serializers.CharField()
     class Meta:
         model = Article
-        fields = ['id','title','description']
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id','username','password']
-        extra_kwargs = {
-            'password':{
-                'write_only':True,
-                'required':True
-                }
-        }
+        fields = ['id','author','title','description', 'content','image', 'created','updated','category']
+        depth=1
     
     def create(self, validated_data):
-        #creating a hashed password
-        user = User.objects.create_user(**validated_data)
-        #creating a token automatically when a new user is created
-        Token.objects.create(user=user)
-        return user
+        category = validated_data.pop('category')
+        category_instance,created = Categories.objects.get_or_create(name=category)
+        article_instance = Article.objects.create(**validated_data, category=category_instance)
+        return article_instance
+    
+    def update(self, instance, validated_data):
+        instance.title = validated_data('title', instance.title)
+        instance.image = validated_data('image', instance.image)
+        instance.description = validated_data('description', instance.description)
+        instance.content = validated_data('content',instance.content)
+        
+        category = validated_data.pop('category')
+        category_instance,created = Categories.objects.get_or_create(name=category)
+        instance.category = category_instance
+        instance.save()
+        return instance
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Categories
+        fields = ['id','name']
 
 # class ArticleSerializer(serializers.Serializer):
 #     title = serializers.CharField(max_length=250)

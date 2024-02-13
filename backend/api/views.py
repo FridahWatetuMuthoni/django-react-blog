@@ -4,27 +4,31 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.response import Response
-from .serializers import ArticleSerializer, UserSerializer
-from .models import Article
+from .serializers import ArticleSerializer, CategorySerializer
+from .models import Article, Categories
 from rest_framework import viewsets
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import get_user_model
+from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 
 # Create your views here.
 
-User = get_user_model()
 
 class ArticleViewSet(viewsets.ModelViewSet):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    authentication_classes = (TokenAuthentication,)
     permission_classes = [IsAuthenticated]
+    parser_classes = [FormParser, MultiPartParser, JSONParser]
+    
+    def perform_save(self, serializer):
+        serializer.save(author=self.request.user)
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Categories.objects.all()
+    serializer_class = CategorySerializer
+        
+
+
 
 # class ArticleViewSet(viewsets.ViewSet):
     
