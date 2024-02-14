@@ -6,18 +6,34 @@ const AuthContext = createContext();
 
 const AuthContextProvider = (props) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [username, setUsername] = useState(null);
+
+  console.log(username);
+  console.log(`token: ${token}`);
 
   useEffect(() => {
-    const url = "http://127.0.0.1/api/articles/";
-    const data = axios.post(url, {});
-    console.log(data);
-  });
+    const fetchProfile = async () => {
+      const url = "http://localhost:8000/users/profile/";
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+      console.log(response?.data);
+      setUser(response?.data);
+    };
+
+    if (username && token) {
+      fetchProfile();
+    }
+  }, [username, token]);
 
   const data = {
     user,
-    setUser,
     token,
+    setToken,
+    setUsername,
   };
 
   return (

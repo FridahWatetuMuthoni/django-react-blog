@@ -1,22 +1,43 @@
 import { useState } from "react";
 import axios from "axios";
+import { Navigate, Link } from "react-router-dom";
+import UseAuthContext from "../../hooks/UseAuthContext";
 
 function Register() {
-  const [user, setUser] = useState({
+  const [registerUser, setRegisterUser] = useState({
     username: "",
-    password: "",
     email: "",
-    phone_number: "",
+    password: "",
   });
+  const [errorMsg, setErrorMsg] = useState("");
+  const [success, setSuccess] = useState(false);
+  const { token } = UseAuthContext();
 
-  const handleSubmit = (e) => {
+  if (token) {
+    return <Navigate to="/" />;
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const url = "http://127.0.0.1/auth/";
-      const response = axios.post(url, { user });
-      console.log(response);
-    } catch (errors) {
-      console.log(errors);
+      console.log(registerUser);
+      const url = "http://127.0.0.1:8000/users/user/";
+      const response = await axios.post(url, JSON.stringify(registerUser), {
+        headers: { "Content-Type": "application/json" },
+        withCredential: true,
+      });
+      console.log(response?.data);
+      setSuccess(true);
+      //clear state
+      setRegisterUser({ username: "", email: "", password: "" });
+    } catch (error) {
+      if (!error?.response) {
+        setErrorMsg("No server response");
+      } else if (error?.response?.status === 409) {
+        setErrorMsg("Username Taken");
+      } else {
+        setErrorMsg("Registration Failed");
+      }
     }
   };
 
@@ -25,7 +46,7 @@ function Register() {
     const value = e.target.value;
 
     if (value.trim()) {
-      setUser((prev) => {
+      setRegisterUser((prev) => {
         return {
           ...prev,
           [name]: value,
@@ -34,14 +55,19 @@ function Register() {
     } else return;
   };
 
+  if (success) {
+    return <Navigate to="/login" />;
+  }
+
   return (
-    <section>
-      <form
-        action=""
-        method="post"
-        className="shadow-lg w-50 mx-auto mt-5 p-5 rounded"
-        onSubmit={handleSubmit}
-      >
+    <section className="shadow-lg w-50 mx-auto mt-3 p-5 rounded">
+      <h3 className="text-center my-1">Registration Page</h3>
+      {errorMsg && (
+        <section className="alert alert-danger">
+          <p className="m-0">{errorMsg}</p>
+        </section>
+      )}
+      <form action="" method="post" className="p-5" onSubmit={handleSubmit}>
         <section>
           <label htmlFor="username">Username</label>
           <input
@@ -50,7 +76,19 @@ function Register() {
             name="username"
             id="username"
             onChange={handleChange}
-            value={user.username}
+            value={registerUser.username}
+            required
+          />
+        </section>
+        <section>
+          <label htmlFor="email">Email</label>
+          <input
+            className="form-control"
+            type="email"
+            name="email"
+            id="email"
+            onChange={handleChange}
+            value={registerUser.email}
             required
           />
         </section>
@@ -63,14 +101,17 @@ function Register() {
             type="password"
             name="password"
             id="password"
+            value={registerUser.password}
             onChange={handleChange}
-            value={user.password}
             required
           />
         </section>
-        <button type="submit" className="btn btn-success mt-2">
+        <button type="submit" className="btn btn-success my-3">
           Submit
         </button>
+        <p className="text-muted">
+          Already have an account <Link to="/login/">Login</Link>
+        </p>
       </form>
     </section>
   );
