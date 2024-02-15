@@ -1,10 +1,12 @@
 import axios from "axios";
 import { useState } from "react";
 import UseAuthContext from "../../hooks/UseAuthContext";
+import { useNavigate } from "react-router-dom";
 
 function NewPost() {
   const [myError, setMyError] = useState("");
   const { token } = UseAuthContext();
+  const nagivate = useNavigate();
 
   const url = `http://127.0.0.1:8000/api/articles/`;
 
@@ -12,23 +14,31 @@ function NewPost() {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
-    for (let value of formData.values()) {
-      if (!value) {
-        setMyError("All values must be added before submitting the form");
-        return;
-      } else {
-        try {
-          const response = await axios.post(url, formData, {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Token ${token}`,
-            },
-            withCredential: true,
-          });
-          console.log(response);
-        } catch (error) {
-          console.log(error);
+    for (let [key, value] of formData.entries()) {
+      if (key === "image") {
+        if (!value.name) {
+          setMyError("All values must be added before submitting the form");
         }
+      } else if (key !== "image") {
+        if (!value.trim()) {
+          setMyError("All values must be added before submitting the form");
+        }
+      }
+    }
+    if (!myError) {
+      try {
+        console.log(formData);
+        const response = await axios.post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Token ${token}`,
+          },
+          withCredential: true,
+        });
+        console.log(response.data);
+        nagivate("/");
+      } catch (error) {
+        console.log(error);
       }
     }
   };

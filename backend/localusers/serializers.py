@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from .models import Profile
+from django.conf import settings
+
 
 
 User = get_user_model()
@@ -32,8 +34,17 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    profile_image = serializers.SerializerMethodField()
+    
+    def get_profile_image(self, obj):
+        # If the profile image is present, return its full URL
+        if obj.profile_image:
+            return self.context['request'].build_absolute_uri(obj.profile_image.url)
+        else:
+            # If not, return the full URL of the default image
+            return f"{self.context['request'].build_absolute_uri(settings.MEDIA_URL)}images/default.jpg"
     class Meta:
         model = Profile
-        fields = '__all__'
-        #depth = 1
+        fields = ['id', 'profile_image', 'bio', 'gender', 'phone_number']
+        depth = 1
 

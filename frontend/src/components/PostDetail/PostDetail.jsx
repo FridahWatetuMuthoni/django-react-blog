@@ -14,7 +14,7 @@ function PostDetail() {
     updated,
   } = state;
   return (
-    <div className="container border border-danger article-detail p-0">
+    <div className="container  article-detail p-0">
       <img src={image} alt="" className="img" />
       <section className="content p-3 ">
         <h3 className="my-3">{title}</h3>
@@ -32,14 +32,14 @@ function PostDetail() {
       <section className="d-flex gap-4 mb-5 px-3">
         <Link
           to={`/edit-posts/${id}`}
-          state={{ id: id }}
+          state={state}
           className="btn btn-primary"
         >
           Updated Post
         </Link>
         <Link
           to={`/delete-posts/${id}`}
-          state={{ id: id }}
+          state={state}
           className="btn btn-danger"
         >
           Delete Post

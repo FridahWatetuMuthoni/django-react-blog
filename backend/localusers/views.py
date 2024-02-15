@@ -52,11 +52,11 @@ def profile_detail(request):
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     if request.method == 'GET':
-        serializer = ProfileSerializer(profile)
+        serializer = ProfileSerializer(profile, context={'request':request})
         return Response(serializer.data)
     
     elif request.method == 'PUT':
-        serializer = ProfileSerializer(profile, data=request.data)
+        serializer = ProfileSerializer(profile, data=request.data,context={'request':request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

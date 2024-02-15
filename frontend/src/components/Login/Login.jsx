@@ -27,6 +27,7 @@ function Login() {
       localStorage.setItem("token", token);
       setSuccess(true);
       setUsername(loginUser.username);
+      localStorage.setItem("username", loginUser.username);
       //clear state
       setLoginUser({ username: "", password: "" });
     } catch (error) {

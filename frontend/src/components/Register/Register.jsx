@@ -14,7 +14,7 @@ function Register() {
   const { token } = UseAuthContext();
 
   if (token) {
-    return <Navigate to="/" />;
+    return <Navigate to="/home" />;
   }
 
   const handleSubmit = async (e) => {
@@ -56,7 +56,7 @@ function Register() {
   };
 
   if (success) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/" />;
   }
 
   return (

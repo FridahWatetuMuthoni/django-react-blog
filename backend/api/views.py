@@ -19,8 +19,14 @@ class ArticleViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     parser_classes = [FormParser, MultiPartParser, JSONParser]
     
-    def perform_save(self, serializer):
-        serializer.save(author=self.request.user)
+    def get_user(self):
+        user = self.request.user
+        return user
+    
+    def perform_create(self, serializer):
+        user = self.get_user()
+        print(user)
+        serializer.save(author=user)
 
 
 class CategoryViewSet(viewsets.ModelViewSet):

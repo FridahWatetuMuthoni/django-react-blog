@@ -17,10 +17,10 @@ class ArticleSerializer(serializers.ModelSerializer):
         return article_instance
     
     def update(self, instance, validated_data):
-        instance.title = validated_data('title', instance.title)
-        instance.image = validated_data('image', instance.image)
-        instance.description = validated_data('description', instance.description)
-        instance.content = validated_data('content',instance.content)
+        instance.title = validated_data.get('title', instance.title)
+        instance.image = validated_data.get('image', instance.image)
+        instance.description = validated_data.get('description', instance.description)
+        instance.content = validated_data.get('content',instance.content)
         
         category = validated_data.pop('category')
         category_instance,created = Categories.objects.get_or_create(name=category)

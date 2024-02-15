@@ -5,11 +5,16 @@ import axios from "axios";
 const AuthContext = createContext();
 
 const AuthContextProvider = (props) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(
+    localStorage.getItem("user")
+      ? JSON.parse(localStorage.getItem("user"))
+      : null
+  );
   const [token, setToken] = useState(localStorage.getItem("token") || null);
-  const [username, setUsername] = useState(null);
+  const [username, setUsername] = useState(
+    localStorage.getItem("username") || null
+  );
 
-  console.log(username);
   console.log(`token: ${token}`);
 
   useEffect(() => {
@@ -21,6 +26,7 @@ const AuthContextProvider = (props) => {
         },
       });
       console.log(response?.data);
+      localStorage.setItem("user", JSON.stringify(response?.data));
       setUser(response?.data);
     };
 
@@ -34,6 +40,7 @@ const AuthContextProvider = (props) => {
     token,
     setToken,
     setUsername,
+    username,
   };
 
   return (
