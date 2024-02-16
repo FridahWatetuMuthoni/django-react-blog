@@ -11,6 +11,7 @@ function NewPost() {
   const url = `http://127.0.0.1:8000/api/articles/`;
 
   const handleSubmit = async (e) => {
+    setMyError("");
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
@@ -19,7 +20,7 @@ function NewPost() {
         if (!value.name) {
           setMyError("All values must be added before submitting the form");
         }
-      } else if (key !== "image") {
+      } else {
         if (!value.trim()) {
           setMyError("All values must be added before submitting the form");
         }
@@ -27,7 +28,10 @@ function NewPost() {
     }
     if (!myError) {
       try {
-        console.log(formData);
+        for (const entry of formData.entries()) {
+          const [name, value] = entry;
+          console.log(`${name} : ${value}`);
+        }
         const response = await axios.post(url, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -39,13 +43,24 @@ function NewPost() {
         nagivate("/");
       } catch (error) {
         console.log(error);
+        if (error.response) {
+          let error_string = "";
+          let responseData = error.response.data;
+          Object.keys(responseData).forEach((key) => {
+            for (let value of responseData[key]) {
+              let str = `${key}:${value} \n`;
+              error_string += str;
+            }
+          });
+          setMyError(error_string);
+        }
       }
     }
   };
   return (
-    <section className="container-md row justify-content-center mb-5">
+    <section className="row justify-content-center w-100 mb-5">
       <form
-        className="col-12 col-sm-12 col-md-8 shadow-lg mt-4 px-4 py-3 p-lg-5"
+        className="col-12 col-sm-12 col-md-8 col-lg-6 shadow-lg mt-4 px-4 py-3 p-lg-5"
         method="post"
         encType="multipart/form-data"
         onSubmit={handleSubmit}
@@ -107,7 +122,7 @@ function NewPost() {
           </label>
           <input type="file" name="image" id="image" className="form-control" />
         </section>
-        <button type="submit" className="btn btn-success my-5">
+        <button type="submit" className="btn btn-success mt-3">
           Create Post
         </button>
       </form>

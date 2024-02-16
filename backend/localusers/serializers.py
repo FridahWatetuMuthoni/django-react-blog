@@ -34,7 +34,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    profile_image = serializers.SerializerMethodField()
+    profile_image = serializers.ImageField(required=False)
     
     def get_profile_image(self, obj):
         # If the profile image is present, return its full URL

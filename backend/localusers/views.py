@@ -42,7 +42,7 @@ class UserViewSet(viewsets.ViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET','PUT'])
+@api_view(['GET','PUT','PATCH'])
 @permission_classes([IsAuthenticated])
 def profile_detail(request):
     user = request.user
@@ -55,13 +55,12 @@ def profile_detail(request):
         serializer = ProfileSerializer(profile, context={'request':request})
         return Response(serializer.data)
     
-    elif request.method == 'PUT':
+    elif request.method in ['PUT', 'PATCH']:
         serializer = ProfileSerializer(profile, data=request.data,context={'request':request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
-
 
 
 # class ProfileViewSet(viewsets.ViewSet):

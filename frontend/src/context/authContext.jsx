@@ -41,6 +41,7 @@ const AuthContextProvider = (props) => {
     setToken,
     setUsername,
     username,
+    setUser,
   };
 
   return (

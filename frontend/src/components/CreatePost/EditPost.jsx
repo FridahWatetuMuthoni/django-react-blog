@@ -43,19 +43,27 @@ function NewPost() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const current_image = post["image"];
-    if (typeof current_image === "string") {
-      delete post["image"];
-    }
     try {
-      const response = await axios.patch(url, post, {
+      const formData = new FormData();
+      console.log(post);
+      Object.entries(post).forEach(([key, value]) => {
+        if (key === "image") {
+          if (typeof value !== "string") {
+            formData.append(key, value);
+          }
+        } else {
+          formData.append(key, value);
+        }
+      });
+
+      const response = await axios.patch(url, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Token ${token}`,
         },
         withCredential: true,
       });
-      console.log(response.data);
+      console.log(response?.data);
       nagivate("/");
     } catch (error) {
       setMyError("There was a problem updating this post");
@@ -148,7 +156,7 @@ function NewPost() {
           />
         </section>
 
-        <button type="submit" className="btn btn-success my-5">
+        <button type="submit" className="btn btn-success mt-3">
           Update Post
         </button>
       </form>

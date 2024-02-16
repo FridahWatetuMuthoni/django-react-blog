@@ -17,7 +17,7 @@ function Login() {
     try {
       console.log(loginUser);
       const url = "http://127.0.0.1:8000/auth/";
-      const response = await axios.post(url, JSON.stringify(loginUser), {
+      const response = await axios.post(url, loginUser, {
         headers: { "Content-Type": "application/json" },
         withCredential: true,
       });
@@ -54,7 +54,7 @@ function Login() {
           [name]: value,
         };
       });
-    } else return;
+    }
   };
 
   if (success || token) {
